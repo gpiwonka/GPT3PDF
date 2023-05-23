@@ -35,7 +35,7 @@ namespace GPT3PDF
 
         private string ExtractTextFromPDF(byte[] file)
         {
-            
+
             string extractedText;
             using (var pdf = PdfDocument.Open(file))
             {
@@ -48,37 +48,47 @@ namespace GPT3PDF
                 extractedText = sb.ToString();
 
             }
-            return extractedText;   
+            return extractedText;
         }
         private string AnalyzeTextWithChatGpt(string extractedText)
         {
+            string responseContent = string.Empty;
+            try
+            {
+                var roles = SqlClient.GetUsers(extractedText);
+                //MessageObj[] msg;
 
-            var roles = SqlClient.GetUsers(extractedText);
-            //MessageObj[] msg;
-
-            // Set up the OpenAI API client
-            var content = new StringContent(
-        JsonConvert.SerializeObject(new
-        {
-            model = "gpt-3.5-turbo",
-            messages = roles
+                // Set up the OpenAI API client
+                var content = new StringContent(
+            JsonConvert.SerializeObject(new
+            {
+                model = "gpt-3.5-turbo",
+                messages = roles
 
 
-        }),
-        Encoding.UTF8,
-        "application/json") ;
+            }),
+            Encoding.UTF8,
+            "application/json");
 
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + chatGptApiKey);
-            //var response = client.PostAsync("https://api.openai.com/v1/engines/davinci-codex/completions", content).Result;
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + chatGptApiKey);
+                //var response = client.PostAsync("https://api.openai.com/v1/engines/davinci-codex/completions", content).Result;
 
-            var response = client.PostAsync("https://api.openai.com/v1/chat/completions", content).Result;
+                var response = client.PostAsync("https://api.openai.com/v1/chat/completions", content).Result;
 
-            var responseContent = response.Content.ReadAsStringAsync().Result;
+                responseContent = response.Content.ReadAsStringAsync().Result;
 
-            var explanation = JsonConvert.DeserializeObject<dynamic>(responseContent).choices[0].message.content;
+                var explanation = JsonConvert.DeserializeObject<dynamic>(responseContent).choices[0].message.content;
+                return explanation;
+            }
+            catch (Exception ex)
+            {
 
-            return explanation;
+                Exception exception = new Exception(responseContent, ex);
+                throw exception;
+            }
+
+
         }
     }
 
