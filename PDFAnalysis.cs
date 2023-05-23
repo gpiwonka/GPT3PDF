@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -17,7 +18,7 @@ namespace GPT3PDF
     {
 
         private static readonly HttpClient client = new HttpClient();
-        private const string chatGptApiKey = "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";
+        private string chatGptApiKey = ConfigurationManager.AppSettings["OpenAIApiKey"];
 
         private static string chatGptModel = "gpt-3.5-turbo";
 

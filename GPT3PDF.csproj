@@ -170,8 +170,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Client.js" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="Style.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -191,6 +193,10 @@
     <Compile Include="SqlClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\piwiaspnettest - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
