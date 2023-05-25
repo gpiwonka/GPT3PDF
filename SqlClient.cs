@@ -93,7 +93,7 @@ namespace GPT3PDF
                         var ipPara = new MySqlParameter("@ip", MySqlDbType.VarString);
                         ipPara.Value = ip;
                         var responseDatePara = new MySqlParameter("@responsedate", MySqlDbType.DateTime);
-                        responseDatePara.Value = DateTime.Now;
+                        responseDatePara.Value = DateTime.UtcNow;
 
                         command.Parameters.Add(filenamePara);
                         command.Parameters.Add(responsePara);

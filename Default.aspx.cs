@@ -14,27 +14,27 @@ namespace GPT3PDF
         {
         }
 
-        protected void btnUpload_Click(object sender, EventArgs e)
-        {
-            if (fileUpload.HasFile)
-            {
-                byte[] pdfBytes = fileUpload.FileBytes;
-                try
-                {
-                    PDFAnalysis pDFAnalysis = new PDFAnalysis();
-                    string extract = pDFAnalysis.AnalyzePDF(pdfBytes);
-                    ResultLabel.Text = extract;
+        //protected void btnUpload_Click(object sender, EventArgs e)
+        //{
+        //    if (fileUpload.HasFile)
+        //    {
+        //        byte[] pdfBytes = fileUpload.FileBytes;
+        //        try
+        //        {
+        //            PDFAnalysis pDFAnalysis = new PDFAnalysis();
+        //            string extract = pDFAnalysis.AnalyzePDF(pdfBytes);
+        //            ResultLabel.Text = extract;
 
-                    SqlClient.SaveReport(fileUpload.FileName, extract, this.Request.UserHostAddress);
+        //            SqlClient.SaveReport(fileUpload.FileName, extract, this.Request.UserHostAddress);
 
-                }
-                catch (Exception ex)
-                {
-                    SqlClient.SaveReport(fileUpload.FileName, "Error! " + ex.ToString(), this.Request.UserHostAddress);
-                    ResultLabel.Text = "Error!";
-                }
-            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            SqlClient.SaveReport(fileUpload.FileName, "Error! " + ex.ToString(), this.Request.UserHostAddress);
+        //            ResultLabel.Text = "Error!";
+        //        }
+        //    }
 
-        }
+        //}
     }
 }
