@@ -8,13 +8,13 @@
     <!-- Favicons -->
     <link href="assets/img/favicon.png" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-     <!-- Vendor CSS Files -->
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
 
     <!-- Google Fonts -->
@@ -23,6 +23,53 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="assets/css/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <style>
+        #fileselct:hover .btn-primary {
+            background-color: #5a95f5 !important;
+        }
+
+        loader {
+            background: #ccc;
+            height: 10px;
+            border-radius: 10px;
+            position: absolute;
+        }
+
+        .loader .blue-line {
+            background: #000;
+            border-radius: 10px;
+            position: relative;
+            left: 0;
+            z-index: 1;
+            width: 100px;
+            height: 10px;
+        }
+
+        .form-horizontal {
+            display: block;
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .progress-bar.indeterminate {
+            position: relative;
+            animation: progress-indeterminate 3s linear infinite;
+        }
+
+        @keyframes progress-indeterminate {
+            from {
+                left: -25%;
+                width: 25%;
+            }
+
+            to {
+                left: 100%;
+                width: 25%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- ======= Header ======= -->
@@ -59,20 +106,25 @@
                 </div>
             </div>
             <div class="text-center">
-                <form id="form1" runat="server">
-                    <div>
+
+                <form id="form1" runat="server" class="form-horizontal">
+
+                    <div class="input-group" id="fileselct">
 
                         <input type="file" id="files" style="display: none" />
-                        <input id="filename" readonly />
-                        <button type="button" id="btnUpload" class="btn btn-primary">Upload</button>
-                        <hr />
-                        <div>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                                </div>
-                            </div>
+                        <input id="filename" readonly placeholder="Select your file" class="form-control" style="width: 100px" />
+                        <div class="input-group-btn">
+                            <button type="button" id="btnUpload" class="btn btn-primary">Upload</button>
+                        </div>
+
+                    </div>
+
+                    <hr />
+                    <div class="progress" style="position: relative;display: none;">
+                        <div class="progress-bar progress-bar-striped indeterminate">
                         </div>
                     </div>
+
                     <div>
                         <label id="Resultlabel" />
                     </div>
@@ -223,9 +275,10 @@
     <!-- Vendor JS Files -->
     <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
     <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
 
@@ -234,56 +287,91 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <script>
+        $('.progress').hide();
         $("#btnUpload").on('click', function () {
+            
+            
+            if ($("#btnUpload").text() == 'Analyse')
+            {
+                document.getElementById("Resultlabel").textContent = '';
+                $('.progress').show();
+                var formData = new FormData();
 
+                var fileUpload = $('#files').get(0);
+                var files = fileUpload.files;
+
+                for (var i = 0; i < files.length; i++) {
+                    $("#filename").val(files[i].name);
+                    formData.append(files[i].name, files[i]);
+                }
+
+                $.ajax({
+                    url: location.protocol.concat("//").concat(window.location.host).concat("/AnaylseService.asmx/Upload"),
+                    type: 'POST',
+                    data: formData,
+                    success: function (data) {
+                        var xml = $.parseXML(new XMLSerializer().serializeToString(data)),
+                            $xml = $(xml),
+                            $test = $xml.find('Message');
+                        document.getElementById("Resultlabel").textContent = $test.text();
+                        $('.progress').hide();
+                        $("#btnUpload").html('Upload');
+                        $("#files").val(''); 
+                    },
+                    error: function (data) {
+                        var xml = $.parseXML(new XMLSerializer().serializeToString(data));
+                        alert('Error: '.concat(xml));
+                        $("#btnUpload").html('Upload');
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+
+                        //xhr.upload.addEventListener("progress", function (evt) {
+                        //    if (evt.lengthComputable) {
+
+                        //        var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+
+                        //        $('.progress-bar').css('width', percentComplete + '%').attr('aria-valuenow', percentComplete);
+                        //        $('.progress-bar').text(percentComplete + '%');
+
+
+                        //    }
+
+                        //}, false);
+                        //xhr.onreadystatechange = function () {
+                        //    if (xhr.readyState == 4) {
+                        //        alert("bind da");
+                        //        $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+                        //        $('.progress-bar').text('Analysing');
+
+                        //    }
+                        //};
+                        return xhr;
+                    },
+                });
+            }
+            else
+            {
+                $("#files").click();
+            }
+        });
+
+        $("#filename").on('click', function () {
+            $("#files").val(''); 
             $("#files").click();
         });
 
         $("#files").on('change', function () {
-
-            var formData = new FormData();
-
+            
+            $("#btnUpload").html('Analyse');
             var fileUpload = $('#files').get(0);
             var files = fileUpload.files;
-
-            for (var i = 0; i < files.length; i++) {
-                $("#filename").val(files[i].name);
-                formData.append(files[i].name, files[i]);
-            }
-
-            $.ajax({
-                url: location.protocol.concat("//").concat(window.location.host).concat("/AnaylseService.asmx/Upload"),
-                type: 'POST',
-                data: formData,
-                success: function (data) {
-                    var xml = $.parseXML(new XMLSerializer().serializeToString(data)),
-                        $xml = $(xml),
-                        $test = $xml.find('Message');
-                    document.getElementById("Resultlabel").textContent = $test.text();
-
-                },
-                error: function (data) {
-                    alert('error' + data)
-                },
-                cache: false,
-                contentType: false,
-                processData: false,
-                xhr: function () {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function (evt) {
-                        if (evt.lengthComputable) {
-
-                            var percentComplete = Math.round((evt.loaded / evt.total) * 100);
-
-                            $('.progress-bar').css('width', percentComplete + '%').attr('aria-valuenow', percentComplete);
-                            $('.progress-bar').text(percentComplete + '%');
-
-                            
-                        }
-                    }, false);
-                    return xhr;
-                },
-            });
+            $("#filename").val(files[0].name);
+            
+           
         });
     </script>
 </body>
