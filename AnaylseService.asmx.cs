@@ -53,14 +53,14 @@ namespace GPT3PDF
             {
                 PDFAnalysis pDFAnalysis = new PDFAnalysis();
                 string extract = pDFAnalysis.AnalyzePDF(pdfBytes);
-                SqlClient.SaveReport(File.FileName, extract, HttpContext.Current.Request.UserHostAddress);
+                
 
                 return new PDFResponse() { Message = extract };
                 
             }
             catch (Exception ex)
             {
-                SqlClient.SaveReport(File.FileName, "Error! " + ex.ToString(), HttpContext.Current.Request.UserHostAddress);
+                
                 
 
             }

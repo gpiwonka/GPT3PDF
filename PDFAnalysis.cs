@@ -1,4 +1,5 @@
 ﻿using GPT3PDF.Models;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,9 @@ namespace GPT3PDF
             string responseContent = string.Empty;
             try
             {
-                var roles = SqlClient.GetUsers(extractedText);
+                List<MessageObj> roles = new List<MessageObj>();
+                roles.Add(new MessageObj() { role = "system", content = "Summarize the text" });
+                roles.Add(new MessageObj() { role = "user", content = extractedText });
                 //MessageObj[] msg;
 
                 // Set up the OpenAI API client
